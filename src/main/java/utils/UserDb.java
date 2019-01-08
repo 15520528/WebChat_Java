@@ -20,6 +20,16 @@ import java.util.List;
  */
 public class UserDb {
 
+    public static void addAcount(Connection conn, UserAccount user) throws SQLException{
+        String sql = "INSERT INTO Users(username, password, email) VALUES(?,?,?)";
+        PreparedStatement pstm = conn.prepareStatement(sql);
+        pstm.setString(1, user.getUserName());
+        pstm.setString(2, user.getPassword());
+        pstm.setString(3, user.getEmail());
+        
+        pstm.executeUpdate();
+    }
+    
     public static UserAccount findUser(Connection conn, //
             String userName, String password) throws SQLException {
         
@@ -43,6 +53,26 @@ public class UserDb {
         return null;
     }
 
+    public static UserAccount findUser(Connection conn, //
+            String userName) throws SQLException {
+        
+        String sql = "Select a.user_id, a.username, a.password, a.gender from Users a " //
+                + " where a.username = ?";
+        PreparedStatement pstm = conn.prepareStatement(sql);
+        pstm.setString(1, userName);
+        ResultSet rs = pstm.executeQuery();
+
+        if (rs.next()) {
+            String id = rs.getString("user_id");
+            String gender = rs.getString("gender");
+            UserAccount user = new UserAccount();
+            user.setId(id);
+            user.setUserName(userName);
+            return user;
+        }
+        return null;
+    }
+    
     public static List<UserAccount> loadFriend(Connection conn, //
             String user_id) throws SQLException {
         

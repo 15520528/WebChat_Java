@@ -20,27 +20,34 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
 import utils.MyUtils;
-
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 
 @WebServlet(name = "LoginServlet", urlPatterns = {"/LoginServlet"})
 public class LoginServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //System.out.println("123");
-        RequestDispatcher dispatcher //
-                        = this.getServletContext().
-                                getRequestDispatcher("/WEB-INF/pages/chatDasboard.jsp");
- 
-                    dispatcher.forward(request, response);
+//        RequestDispatcher dispatcher //
+//                = this.getServletContext().
+//                        getRequestDispatcher("/WEB-INF/pages/chatDasboard.jsp");
+//
+//        dispatcher.forward(request, response);
     }
 
-
+    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        
         UserAccount user = null;
         String userName = request.getParameter("username");
         String password = request.getParameter("password");
@@ -64,13 +71,20 @@ public class LoginServlet extends HttpServlet {
                     //out.println("username or password errors");
                     System.out.println("Error user");
                 }
-            }
-            else{
+            } else {
                 try (PrintWriter out = response.getWriter()) {
                     //store user into session
                     HttpSession session = request.getSession();
                     MyUtils.storeLoginedUser(session, user);
                     System.out.println("login successfuly" + user.getId());
+
+                    //generate token 
+                    Algorithm al = Algorithm.HMAC256("secret");
+                    String token = JWT.create()
+                            .withClaim("username", userName)
+                            .withClaim("isLogin", true)
+                            .withClaim("userId", user.getId())
+                            .sign(al);
                     
                     request.setAttribute("userid", user.getId());
                     user = new UserAccount();
@@ -78,15 +92,16 @@ public class LoginServlet extends HttpServlet {
                     user.setPassword(password);
                     // Lưu các thông tin vào request attribute trước khi forward.
                     request.setAttribute("user", user);
-                    
-                    
-                    RequestDispatcher dispatcher 
-                        = this.getServletContext().
-                                getRequestDispatcher("/WEB-INF/pages/chatDasboard.jsp");
- 
+
+                    Cookie ck = new Cookie("Authorization", token);
+                    //ck.setMaxAge(24 * 60 * 60);
+                    response.addCookie(ck);
+                    RequestDispatcher dispatcher
+                            = this.getServletContext().
+                                    getRequestDispatcher("/WEB-INF/pages/chatDasboard.jsp");
+
                     dispatcher.forward(request, response);
-                    
-   
+
                 }
             }
             //processRequest(request, response);
@@ -96,7 +111,6 @@ public class LoginServlet extends HttpServlet {
         //response.setContentType("text/html;charset=UTF-8");
     }
 
- 
     @Override
     public String getServletInfo() {
         return "Short description";

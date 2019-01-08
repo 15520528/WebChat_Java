@@ -20,6 +20,7 @@ public class UserAccount {
    private String status; 
    private String fullName;
    private String Id;
+   private String email;
    
    public UserAccount() {
         
@@ -33,6 +34,14 @@ public class UserAccount {
        this.userName = userName;
    }
  
+   public String getEmail() {
+       return email;
+   }
+ 
+   public void setEmail(String email) {
+       this.email = email;
+   }
+   
    public String getGender() {
        return gender;
    }

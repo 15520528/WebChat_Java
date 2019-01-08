@@ -21,6 +21,7 @@ import utils.ConversationDb;
 import beans.Conversation;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.http.Cookie;
 
 /**
  *
@@ -28,7 +29,7 @@ import java.util.List;
  */
 @WebServlet(name = "ViewConversation", urlPatterns = {"/ViewConversation"})
 public class ViewConversation extends HttpServlet {
-    
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -37,7 +38,7 @@ public class ViewConversation extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ViewConversation</title>");            
+            out.println("<title>Servlet ViewConversation</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet ViewConversation at " + request.getContextPath() + "</h1>");
@@ -49,6 +50,9 @@ public class ViewConversation extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        //System.out.println("author in viewConversation"+request.getHeader("Authorization"));
+        
+        
         String userId = request.getParameter("userId");
         Connection conn = null;
         try {
@@ -58,9 +62,9 @@ public class ViewConversation extends HttpServlet {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        try{
-           StringBuilder JsonString = new StringBuilder();
+
+        try {
+            StringBuilder JsonString = new StringBuilder();
             List<Conversation> conversationList = null;
             conversationList = ConversationDb.loadConvesations(conn, userId);
             for (Conversation conversation : conversationList) {
@@ -70,16 +74,16 @@ public class ViewConversation extends HttpServlet {
                 JsonString.append(conversation.getTitle()).append("'},");
                 //System.out.println(conversation.getTitle());
             }
-            JsonString.deleteCharAt(JsonString.length()-1);
+            JsonString.deleteCharAt(JsonString.length() - 1);
             response.setContentType("text/html;charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
             PrintWriter out = response.getWriter();
             out.write(JsonString.toString());
 
-        }catch (SQLException ex) {
+        } catch (SQLException ex) {
             Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
 
     @Override
