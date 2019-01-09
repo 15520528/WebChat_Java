@@ -15,11 +15,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import beans.UserAccount;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONObject;
 import utils.UserDb;
 
 
@@ -62,10 +66,15 @@ public class LoadFriend extends HttpServlet {
         }
         
         try {
+            JSONObject json=new JSONObject();
             friendList = UserDb.loadFriend(conn, "1");
-            for (UserAccount userAccount : friendList) {
-                System.out.println(userAccount.getFulName());
-            }
+            Gson gson=new Gson();
+            
+            response.setContentType("text/html;charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            
+            PrintWriter out = response.getWriter();
+            out.write(gson.toJson(friendList));
         }
         catch (SQLException ex) {
             Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);

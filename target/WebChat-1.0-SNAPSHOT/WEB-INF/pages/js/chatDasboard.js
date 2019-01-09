@@ -1,22 +1,34 @@
-var ws;
+$(".messages").animate({scrollTop: $(document).height()}, "fast");
 
-function connect() {
-    
-    //var username = document.getElementById("username").value;
-    ws = new WebSocket("ws://localhost:8081/mavenproject1/chatRoomServer/Nam");
-    ws.onmessage = function(event) {
-        alert(9);
-        console.log(event.data);
-        //var message = JSON.parse(event.data);
-        //log.innerHTML += message.from + " : " + message.content + "\n";
-    };
-}
+$("#profile-img").click(function () {
+    $("#status-options").toggleClass("active");
+});
 
-function send() {
-    var content = document.getElementById("msg").value;
-    var json = JSON.stringify({
-        "content":content
-    });
+$(".expand-button").click(function () {
+    $("#profile").toggleClass("expanded");
+    $("#contacts").toggleClass("expanded");
+});
 
-    ws.send(json);
-}
+$("#status-options ul li").click(function () {
+    $("#profile-img").removeClass();
+    $("#status-online").removeClass("active");
+    $("#status-away").removeClass("active");
+    $("#status-busy").removeClass("active");
+    $("#status-offline").removeClass("active");
+    $(this).addClass("active");
+
+    if ($("#status-online").hasClass("active")) {
+        $("#profile-img").addClass("online");
+    } else if ($("#status-away").hasClass("active")) {
+        $("#profile-img").addClass("away");
+    } else if ($("#status-busy").hasClass("active")) {
+        $("#profile-img").addClass("busy");
+    } else if ($("#status-offline").hasClass("active")) {
+        $("#profile-img").addClass("offline");
+    } else {
+        $("#profile-img").removeClass();
+    }
+    ;
+
+    $("#status-options").removeClass("active");
+});

@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mycompany.webchat.test;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -31,6 +32,8 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.redisson.Redisson;
 import org.redisson.api.RMapCache;
 import org.redisson.api.RReadWriteLock;
@@ -38,7 +41,8 @@ import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 
 public class DiscardServerHandler extends SimpleChannelInboundHandler<String> {
-
+    private static Logger logger = LogManager.getLogger(DiscardServerHandler.class);
+    
     //save client's channel connect to server
     private static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
@@ -68,6 +72,7 @@ public class DiscardServerHandler extends SimpleChannelInboundHandler<String> {
                 StringBuilder JsonString = new StringBuilder();
                 JsonString.append("{ \"command\":\"detailConversations\",\n"
                         + "  \"detailsConversations\":[");
+
                 for (JsonElement value : jsonObject.get("Conversation_ids").getAsJsonArray()) {
                     System.out.println(value.getAsString());
                     String Id = value.getAsString();
@@ -106,45 +111,16 @@ public class DiscardServerHandler extends SimpleChannelInboundHandler<String> {
 
                 //send all detail conversations to client
                 ctx.writeAndFlush(new TextWebSocketFrame(JsonString.toString()));
-                
-                System.out.println(channels.size());
-                for (Map.Entry<String, ChannelGroup> entry : Participants.entrySet()) {
-                    String key = entry.getKey();
-                    System.out.println(key + " size: " + entry.getValue().size());
-                }
+
+//                System.out.println(channels.size());
+//                for (Map.Entry<String, ChannelGroup> entry : Participants.entrySet()) {
+//                    String key = entry.getKey();
+//                    System.out.println(key + " size: " + entry.getValue().size());
+//                }
             } else if (command.equalsIgnoreCase("sendMessage")) {
-                System.out.println("contain");
-                String Id = jsonObject.get("Conversation_id").getAsString();
-                String message = jsonObject.get("message").getAsString();
-                String sender = jsonObject.get("sender").getAsString();
-                //save message to memcache
-                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-                LocalDateTime now = LocalDateTime.now();
-
-                RReadWriteLock rwlock = redisson.getReadWriteLock("anyRWLock");
-
-                rwlock.writeLock().lock();
-
-                RMapCache<String, String> mapCache = redisson.getMapCache(Id);
-                mapCache.setMaxSize(5);
-                mapCache.put(sender + "/" + System.currentTimeMillis(), message);
-
-                rwlock.writeLock().unlock();
-
-                //send message to  participants in Conversation
-                for (Channel c : Participants.get(Id)) {
-                    if (c != ctx.channel()) {
-                        c.writeAndFlush(new TextWebSocketFrame(
-                                "{\"command\":\"detailMessage\",\"message\":{\"sender\":\"" + sender + "\",\"Conversation_id\": \"" + Id + "\", \"message\":\"" + message + "\"}}\n"));
-                    } else {
-                        c.writeAndFlush(new TextWebSocketFrame(
-                                "{\"command\":\"detailMessage\",\"message\":{\"sender\":\"you\", \"Conversation_id\": \"" + Id + "\", \"message\":\"" + message + "\"}}\n"));
-                        //c.writeAndFlush(new TextWebSocketFrame("[you] " + ((TextWebSocketFrame) msg).text() + '\n'));
-                    }
-                }
+                //send messsage to involked clients
+                broadCast(ctx, jsonObject);
                 return;
-            } else if (command.equalsIgnoreCase("sendMessage")) {
-
             }
         }
         DefaultHttpRequest httpRequest = null;
@@ -164,24 +140,56 @@ public class DiscardServerHandler extends SimpleChannelInboundHandler<String> {
         }
     }
 
-    @Override
-    public void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
-        TextWebSocketFrame frame = new TextWebSocketFrame(msg);
-        System.out.println(frame.text());
-        for (Channel c : channels) {
+    //send messages to all clients joined the conversation id 
+    public void broadCast(ChannelHandlerContext ctx, JsonObject jsonObject) {
+        System.out.println("contain");
+        String Id = jsonObject.get("Conversation_id").getAsString();
+        String message = jsonObject.get("message").getAsString();
+        String sender = jsonObject.get("sender").getAsString();
+        //save message to memcache
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        RReadWriteLock rwlock = redisson.getReadWriteLock("anyRWLock");
+
+        rwlock.writeLock().lock();
+
+        RMapCache<String, String> mapCache = redisson.getMapCache(Id);
+        mapCache.setMaxSize(5);
+        mapCache.put(sender + "/" + System.currentTimeMillis(), message);
+
+        rwlock.writeLock().unlock();
+
+        //send message to  participants in Conversation
+        for (Channel c : Participants.get(Id)) {
             if (c != ctx.channel()) {
-                c.writeAndFlush("[" + ctx.channel().remoteAddress() + "] " + msg + '\n');
+                c.writeAndFlush(new TextWebSocketFrame(
+                        "{\"command\":\"detailMessage\",\"message\":{\"sender\":\"" + sender + "\",\"Conversation_id\": \"" + Id + "\", \"message\":\"" + message + "\"}}\n"));
             } else {
-                c.writeAndFlush("[you] " + msg + '\n');
+                c.writeAndFlush(new TextWebSocketFrame(
+                        "{\"command\":\"detailMessage\",\"message\":{\"sender\":\"you\", \"Conversation_id\": \"" + Id + "\", \"message\":\"" + message + "\"}}\n"));
             }
         }
+    }
+
+    @Override
+    public void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
+//        TextWebSocketFrame frame = new TextWebSocketFrame(msg);
+//        System.out.println(frame.text());
+//        for (Channel c : channels) {
+//            if (c != ctx.channel()) {
+//                c.writeAndFlush("[" + ctx.channel().remoteAddress() + "] " + msg + '\n');
+//            } else {
+//                c.writeAndFlush("[you] " + msg + '\n');
+//            }
+//        }
     }
 
     //client session joined into this chat
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
-        channels.add(ctx.channel());
-        System.out.println("đm 1 thằng client đã tham gia >< ");
+        System.out.println("1 client đã tham gia >< ");
+        logger.info("One client has connected!");
     }
 
     @Override
@@ -191,4 +199,3 @@ public class DiscardServerHandler extends SimpleChannelInboundHandler<String> {
         ctx.close();
     }
 }
-

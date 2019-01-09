@@ -1,3 +1,222 @@
+#leftframe {
+    width: 7%;
+    min-width: 20px;
+    max-width: 70px;
+    height: 92vh;
+    min-height: 300px;
+    max-height: 720px;
+    background: #2a3b59;
+    position: relative;
+}
+
+#leftframe {
+    width: 7%;
+    min-width: 20px;
+    max-width: 70px;
+    height: 92vh;
+    min-height: 300px;
+    max-height: 720px;
+    background: #2a3b59;
+    position: relative;
+}
+
+.navbar-primary {
+    background-color: #2a3b59;
+    bottom: 0px;
+    left: 0px;
+    top:40%;
+    position: absolute;
+    width: 100%;
+    z-index: 8;
+    overflow: hidden;
+    -webkit-transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+}
+
+
+.navbar-primary-menu,
+.navbar-primary-menu li {
+    margin-top:0; 
+    padding:0;
+    list-style: none;
+}
+
+.active{
+    background-color: #1d298b;
+}
+.navbar-primary-menu li a {
+    display: block;
+    padding: 10px 10px;
+    text-align: center;
+    border-bottom:solid 1px #444;
+    color: #ccc;
+}
+
+.navbar-primary-menu li a:hover {
+    background-color: #1d298b;
+    text-decoration: none;
+    color: white;
+}
+
+#frame #sidepanel #friends {
+    height: calc(100% - 177px);
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+@media screen and (max-width: 735px) {
+    #frame #sidepanel #friends {
+        height: calc(100% - 149px);
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+    #frame #sidepanel #friends::-webkit-scrollbar {
+        display: none;
+    }
+}
+#frame #sidepanel #friends.expanded {
+    height: calc(100% - 334px);
+}
+#frame #sidepanel #friends::-webkit-scrollbar {
+    width: 8px;
+    background: #2c3e50;
+}
+#frame #sidepanel #friends::-webkit-scrollbar-thumb {
+    background-color: #243140;
+}
+#frame #sidepanel #friends ul li.contact {
+    position: relative;
+    padding: 10px 0 15px 0;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+@media screen and (max-width: 735px) {
+    #frame #sidepanel #friends ul li.contact {
+        padding: 6px 0 46px 8px;
+    }
+}
+#frame #sidepanel #friends ul li.contact:hover {
+    background: #32465a;
+}
+#frame #sidepanel #friends ul li.contact.active {
+    background: #32465a;
+    border-right: 5px solid #435f7a;
+}
+#frame #sidepanel #friends ul li.contact.active span.contact-status {
+    border: 2px solid #32465a !important;
+}
+#frame #sidepanel #friends ul li.contact .wrap {
+    width: 88%;
+    margin: 0 auto;
+    position: relative;
+}
+@media screen and (max-width: 735px) {
+    #frame #sidepanel #friends ul li.contact .wrap {
+        width: 100%;
+    }
+}
+#frame #sidepanel #friends ul li.contact .wrap span {
+    position: absolute;
+    left: 0;
+    margin: -2px 0 0 -2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid #2c3e50;
+    background: #95a5a6;
+}
+#frame #sidepanel #friends ul li.contact .wrap span.online {
+    background: #2ecc71;
+}
+#frame #sidepanel #friends ul li.contact .wrap span.away {
+    background: #f1c40f;
+}
+#frame #sidepanel #friends ul li.contact .wrap span.busy {
+    background: #e74c3c;
+}
+#frame #sidepanel #friends ul li.contact .wrap img {
+    width: 40px;
+    border-radius: 50%;
+    float: left;
+    margin-right: 10px;
+}
+@media screen and (max-width: 735px) {
+    #frame #sidepanel #friends ul li.contact .wrap img {
+        margin-right: 0px;
+    }
+}
+#frame #sidepanel #friends ul li.contact .wrap .meta {
+    padding: 5px 0 0 0;
+}
+@media screen and (max-width: 735px) {
+    #frame #sidepanel #friends ul li.contact .wrap .meta {
+        display: none;
+    }
+}
+#frame #sidepanel #friends ul li.contact .wrap .meta .name {
+    font-weight: 600;
+}
+#frame #sidepanel #friends ul li.contact .wrap .meta .preview {
+    margin: 5px 0 0 0;
+    padding: 0 0 1px;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -moz-transition: 1s all ease;
+    -o-transition: 1s all ease;
+    -webkit-transition: 1s all ease;
+    transition: 1s all ease;
+}
+#frame #sidepanel #friends ul li.contact .wrap .meta .preview span {
+    position: initial;
+    border-radius: initial;
+    background: none;
+    border: none;
+    padding: 0 2px 0 0;
+    margin: 0 0 0 1px;
+    opacity: .5;
+}
+
+.navbar-primary {
+    background-color: #2a3b59;
+    bottom: 0px;
+    left: 0px;
+    top:40%;
+    position: absolute;
+    width: 100%;
+    z-index: 8;
+    overflow: hidden;
+    -webkit-transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+}
+
+
+.navbar-primary-menu,
+.navbar-primary-menu li {
+    margin-top:0; 
+    padding:0;
+    list-style: none;
+}
+
+.active{
+    background-color: #1d298b;
+}
+.navbar-primary-menu li a {
+    display: block;
+    padding: 10px 10px;
+    text-align: center;
+    border-bottom:solid 1px #444;
+    color: #ccc;
+}
+
+.navbar-primary-menu li a:hover {
+    background-color: #1d298b;
+    text-decoration: none;
+    color: white;
+}
+
 
 #frame {
     width: 95%;
@@ -429,6 +648,9 @@
     margin: 0 0 0 1px;
     opacity: .5;
 }
+
+
+
 #frame #sidepanel #bottom-bar {
     position: absolute;
     width: 100%;

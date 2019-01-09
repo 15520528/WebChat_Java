@@ -15,9 +15,11 @@ import org.redisson.api.RMapCache;
 import org.redisson.api.RReadWriteLock;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
+import org.apache.logging.log4j.*;
+import org.apache.logging.log4j.LogManager;
 
 public class test {
-
+    private static Logger logger = LogManager.getLogger(test.class);
     public static void main(String[] args) throws ExecutionException {
 //        CacheLoader<String, String> loader;
 //        loader = new CacheLoader<String, String>() {
@@ -77,14 +79,26 @@ public class test {
 //        map.put("5", "bon");
 //        map.put("6", "bon");
 //        map.put("7", "bon");
-        Set<Map.Entry<String, String>> allEntries = map.readAllEntrySet();
+//        Set<Map.Entry<String, String>> allEntries = map.readAllEntrySet();
+//
+//
+//        for (Map.Entry<String, String> entry : allEntries) {
+//            String key = entry.getKey();
+//            String value = entry.getValue();
+//            System.out.println(key+" "+value);
+//        }    
+//        System.out.println(System.currentTimeMillis());
 
+   
 
-        for (Map.Entry<String, String> entry : allEntries) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            System.out.println(key+" "+value);
-        }    
-        System.out.println(System.currentTimeMillis());
+//        logger.
+        logger.trace("Trace Message!");
+        logger.debug("Debug Message!");
+        logger.info("Info Message!");
+        logger.warn("Warn Message!");
+        logger.error("Error Message!");
+        logger.fatal("Fatal Message!1");
+        logger.trace("Exiting application.");
+
     }
 }

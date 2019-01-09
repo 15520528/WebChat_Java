@@ -1,0 +1,5 @@
+[[36mDEBUG[m] 2019-01-09 23:05:34,082 test.main() - Debug Message!
+[[32mINFO [m] 2019-01-09 23:05:34,087 test.main() - Info Message!
+[[33mWARN [m] 2019-01-09 23:05:34,088 test.main() - Warn Message!
+[[1;31mERROR[m] 2019-01-09 23:05:34,088 test.main() - Error Message!
+[[1;31mFATAL[m] 2019-01-09 23:05:34,088 test.main() - Fatal Message!1

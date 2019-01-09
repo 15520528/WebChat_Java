@@ -94,7 +94,6 @@ public class UserDb {
             UserAccount user = new UserAccount();
             user.setFullName(fullName);
             user.setId(id);
-
             user.setStatus(is_online);
 
             contacList.add(user);

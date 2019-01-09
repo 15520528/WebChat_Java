@@ -63,7 +63,7 @@ public class UserAccount {
    }
  
    public void setStatus(String Status) {
-       this.status = status;
+       this.status = Status;
    }
    
    public String getFulName(){
