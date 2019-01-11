@@ -66,7 +66,34 @@ public class DiscardServerHandler extends SimpleChannelInboundHandler<String> {
             String command = jsonObject.get("command").getAsString();
             //if first request then add channel to conversation
             if (command.equalsIgnoreCase("getDetailConversations")) {
-                System.out.println("not contain");
+                getDetailConversations(ctx, jsonObject);
+                
+            } else if (command.equalsIgnoreCase("sendMessage")) {
+                //send messsage to involked clients
+                broadCast(ctx, jsonObject);
+                return;
+            }
+        }
+        DefaultHttpRequest httpRequest = null;
+        if (msg instanceof DefaultHttpRequest) {
+            httpRequest = (DefaultHttpRequest) msg;
+
+            // Handshake
+            WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory("ws://127.0.0.1:8081/", null, false);
+            final Channel channel = ctx.channel();
+            final WebSocketServerHandshaker handshaker = wsFactory.newHandshaker(httpRequest);
+
+            if (handshaker == null) {
+
+            } else {
+                ChannelFuture handshake = handshaker.handshake(channel, httpRequest);
+            }
+        }
+    }
+
+    //get recent conversation's messages with user'ID
+    public void getDetailConversations(ChannelHandlerContext ctx, JsonObject jsonObject){
+          System.out.println("not contain");
                 //System.out.println(jsonObject.get("Conversation_ids").getAsString());
                 //add client's channel to groupChannel -> send message distinct
                 StringBuilder JsonString = new StringBuilder();
@@ -117,29 +144,8 @@ public class DiscardServerHandler extends SimpleChannelInboundHandler<String> {
 //                    String key = entry.getKey();
 //                    System.out.println(key + " size: " + entry.getValue().size());
 //                }
-            } else if (command.equalsIgnoreCase("sendMessage")) {
-                //send messsage to involked clients
-                broadCast(ctx, jsonObject);
-                return;
-            }
-        }
-        DefaultHttpRequest httpRequest = null;
-        if (msg instanceof DefaultHttpRequest) {
-            httpRequest = (DefaultHttpRequest) msg;
-
-            // Handshake
-            WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory("ws://127.0.0.1:8081/", null, false);
-            final Channel channel = ctx.channel();
-            final WebSocketServerHandshaker handshaker = wsFactory.newHandshaker(httpRequest);
-
-            if (handshaker == null) {
-
-            } else {
-                ChannelFuture handshake = handshaker.handshake(channel, httpRequest);
-            }
-        }
     }
-
+    
     //send messages to all clients joined the conversation id 
     public void broadCast(ChannelHandlerContext ctx, JsonObject jsonObject) {
         System.out.println("contain");
